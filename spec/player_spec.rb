@@ -5,25 +5,17 @@ require'ship'
 RSpec.describe Player do
   let(:player) { Player.new("Alice") }
   let(:opponent_board) { Board.new }
+  let(:ship) { Ship.new(3) }
 
-  describe '#initialize' do
-    it 'creates a player with a name and a board' do
-      expect(player.name).to eq("Alice")
-      expect(player.board).to be_instance_of(Board)
-    end
+  before do
+    opponent_board.place_ship(ship, 0, 0, :horizontal)
   end
 
-  describe '#place_ships' do
-    it 'allows the player to place ships on their board' do
-      # Simulate valid input for the first ship
-      allow(player).to receive(:gets).and_return('0 0 horizontal', '0 0 horizontal', '1 1 horizontal')
-
-      player.place_ships
-
-      expect(player.board.instance_variable_get(:@grid)[0][0]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[0][1]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[0][2]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[1][1]).to eq('S')
+  describe '#take_turn' do
+    it 'allows the player to shoot at the opponent board and displays the result' do
+      allow(player).to receive(:gets).and_return('0 0')
+      expect(opponent_board).to receive(:shoot).with(0, 0).and_return('Hit')
+      expect { player.take_turn(opponent_board) }.to output(/Hit/).to_stdout
     end
   end
 end

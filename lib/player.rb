@@ -22,4 +22,11 @@ class Player
       end
     end
   end
+
+  def take_turn(opponent_board)
+    puts "#{name}, choose coordinates to shoot (e.g., 0 0):"
+    x, y = gets.chomp.split.map(&:to_i)
+    result = opponent_board.shoot(x, y)
+    puts result
+  end
 end
