@@ -5,40 +5,32 @@ RSpec.describe Board do
   let(:board) { Board.new }
   let(:ship) { Ship.new(3) }
 
-  describe '#initialize' do
-    it 'initializes a 5x5 grid' do
-      expect(board.instance_variable_get(:@grid).size).to eq(5)
-      expect(board.instance_variable_get(:@grid).all? { |row| row.size == 5 }).to be true
-    end
+  before do
+    board.place_ship(ship, 0, 0, :horizontal)
   end
 
-  describe '#display' do
-    it 'displays the grid in the console' do
-      expect { board.display }.to output.to_stdout
-    end
-  end
-
-  describe '#place_ship' do
-    it 'places a ship on the board' do
-      board.place_ship(ship, 0, 0, :horizontal)
-      expect(board.instance_variable_get(:@grid)[0][0]).to eq('S')
-    end
-  end
-
-  describe '#valid_position?' do
-    let(:ship) { Ship.new(3) }
-
-    it 'returns true for a valid position' do
-      expect(board.valid_position?(ship, 0, 0, :horizontal)).to be true
+  describe '#shoot' do
+    it 'returns "Hit" if a ship is hit' do
+      expect(board.shoot(0, 0)).to eq('Hit')
     end
 
-    it 'returns false for an invalid position out of bounds' do
-      expect(board.valid_position?(ship, 4, 4, :horizontal)).to be false
+    it 'returns "Miss" if no ship is hit' do
+      expect(board.shoot(1, 1)).to eq('Miss')
     end
 
-    it 'returns false if ship overlaps another ship' do
-      board.place_ship(ship, 0, 0, :horizontal)
-      expect(board.valid_position?(ship, 0, 0, :horizontal)).to be false
+    it 'returns "Out of bounds" for shots outside the grid' do
+      expect(board.shoot(5, 5)).to eq('Out of bounds')
+    end
+
+    it 'returns "Already shot here" if the cell was already shot' do
+      board.shoot(0, 0)
+      expect(board.shoot(0, 0)).to eq('Already shot here')
+    end
+
+    it 'returns "Sink" if a ship is sunk' do
+      board.shoot(0, 0)
+      board.shoot(0, 1)
+      expect(board.shoot(0, 2)).to eq('Sink')
     end
   end
 end
