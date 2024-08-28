@@ -12,10 +12,20 @@ player1.place_ships
 puts "Player 2, place your ships:"
 player2.place_ships
 
-# Display the boards to verify ship placement
-puts "\nPlayer 1's Board:"
-player1.board.display
-puts "\nPlayer 2's Board:"
-player2.board.display
+# Game loop for taking turns
+current_player = player1
+opponent_board = player2.board
 
-puts "Ship placement complete. Ready for Step 2!"
+loop do
+  current_player.take_turn(opponent_board)
+
+  # Check if the current player has won
+  if opponent_board.all_ships_sunk?
+    puts "#{current_player.name} wins!"
+    break
+  end
+
+  # Switch players
+  current_player = current_player == player1 ? player2 : player1
+  opponent_board = current_player == player1 ? player2.board : player1.board
+end

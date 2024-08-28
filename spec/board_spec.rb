@@ -32,5 +32,12 @@ RSpec.describe Board do
       board.shoot(0, 1)
       expect(board.shoot(0, 2)).to eq('Sink')
     end
+
+    it 'confirms all ships are sunk' do
+      board.shoot(0, 0)
+      board.shoot(0, 1)
+      board.shoot(0, 2)
+      expect(board.all_ships_sunk?).to be true
+    end
   end
 end
