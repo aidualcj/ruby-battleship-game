@@ -12,7 +12,7 @@ class Player
         puts "#{name}, where do you want to place your #{ship.size}-unit ship? (format: x y orientation)"
         x, y, orientation = gets.chomp.split
         x, y = x.to_i, y.to_i
-        if @board.valid_position?(ship, x, y, orientation.to_sym)
+        if @board.position_valid?(ship, x, y, orientation.to_sym)
           @board.place_ship(ship, x, y, orientation.to_sym)
           @board.display
           break

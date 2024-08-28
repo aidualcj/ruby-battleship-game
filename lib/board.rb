@@ -1,6 +1,7 @@
 class Board
   def initialize
     @grid = Array.new(5) { Array.new(5, '-') }
+    @ships = []
   end
 
   def display
@@ -8,10 +9,12 @@ class Board
   end
 
   def place_ship(ship, x, y, orientation)
-    if valid_position?(ship, x, y, orientation)
-      ship.coordinates(x, y, orientation).each do |coord|
+    if position_valid?(ship, x, y, orientation)
+      ship.calculate_coordinates(x, y, orientation)
+      ship.coordinates.each do |coord|
         @grid[coord[0]][coord[1]] = 'S'
       end
+      @ships << ship
     else
       raise "Invalid position for the ship"
     end
@@ -24,14 +27,14 @@ class Board
     end
 
     if @grid[x][y] == 'S'
-      @grid[x][y] = 'X' # Mark as hit
-      if ship_sunk?(x, y)
+      @grid[x][y] = 'X' # To mark as hit
+      if ship_sunk_at?(x, y)
         'Sink'
       else
         'Hit'
       end
     elsif @grid[x][y] == '-'
-      @grid[x][y] = 'O' # Mark as miss
+      @grid[x][y] = 'O' # To mark as miss
       'Miss'
     else
       'Already shot here'
@@ -39,11 +42,14 @@ class Board
   end
 
   def all_ships_sunk?
-    @grid.flatten.none? { |cell| cell == 'S' }
+    @ships.all? do |ship|
+      ship.coordinates.all? { |coord| @grid[coord[0]][coord[1]] == 'X' }
+    end
   end
 
-  def valid_position?(ship, x, y, orientation)
-    ship.coordinates(x, y, orientation).all? do |coord|
+  def position_valid?(ship, x, y, orientation)
+    ship.calculate_coordinates(x, y, orientation)
+    ship.coordinates.all? do |coord|
       within_bounds?(coord[0], coord[1]) && @grid[coord[0]][coord[1]] == '-'
     end
   end
@@ -54,8 +60,10 @@ class Board
     x.between?(0, 4) && y.between?(0, 4)
   end
 
-  def ship_sunk?(x, y)
-    # Iterate through the board to check if there is any remaining 'S' of a ship
-    @grid.flatten.none? { |cell| cell == 'S' }
+  # New method to check if a specific ship is sunk
+  def ship_sunk_at?(x, y)
+    @ships.any? do |ship|
+      ship.coordinates.all? { |coord| @grid[coord[0]][coord[1]] == 'X' }
+    end
   end
 end

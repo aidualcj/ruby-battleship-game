@@ -19,7 +19,7 @@ opponent_board = player2.board
 loop do
   current_player.take_turn(opponent_board)
 
-  # Check if the current player has won
+  # Check if the current player has won ?
   if opponent_board.all_ships_sunk?
     puts "#{current_player.name} wins!"
     break

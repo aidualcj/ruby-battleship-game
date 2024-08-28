@@ -1,11 +1,13 @@
 class Ship
-  attr_reader :size
+  attr_reader :size, :coordinates
 
   def initialize(size)
     @size = size
+    @coordinates = []
   end
 
-  def coordinates(x, y, orientation)
+  # This method calculates and sets the coordinates when the ship is placed
+  def calculate_coordinates(x, y, orientation)
     coords = []
     case orientation
     when :horizontal
@@ -13,6 +15,6 @@ class Ship
     when :vertical
       @size.times { |i| coords << [x + i, y] }
     end
-    coords
+    @coordinates = coords  # Here to store the calculated coordinates
   end
 end
