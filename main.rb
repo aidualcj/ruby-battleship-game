@@ -12,6 +12,12 @@ player1.place_ships
 puts "Player 2, place your ships:"
 player2.place_ships
 
+# Randomly determine the starting player
+current_player = [player1, player2].sample
+opponent_board = current_player == player1 ? player2.board : player1.board
+
+puts "#{current_player.name} will start the game!"
+
 # Game loop for taking turns
 current_player = player1
 opponent_board = player2.board
