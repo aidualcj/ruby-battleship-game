@@ -63,7 +63,11 @@ class Board
   # New method to check if a specific ship is sunk
   def ship_sunk_at?(x, y)
     @ships.any? do |ship|
-      ship.coordinates.all? { |coord| @grid[coord[0]][coord[1]] == 'X' }
+      if ship.coordinates.include?([x, y])
+        # Check if all parts of this ship are hit ('X')
+        all_sunk = ship.coordinates.all? { |coord| @grid[coord[0]][coord[1]] == 'X' }
+        all_sunk
+      end
     end
   end
 end
