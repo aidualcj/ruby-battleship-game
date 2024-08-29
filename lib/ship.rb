@@ -15,6 +15,6 @@ class Ship
     when :vertical
       @size.times { |i| coords << [x + i, y] }
     end
-    @coordinates = coords  # Here to store the calculated coordinates
+    @coordinates = coords
   end
 end

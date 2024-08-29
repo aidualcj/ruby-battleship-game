@@ -29,13 +29,13 @@ class Board
     if @grid[x][y] == 'S'
       @grid[x][y] = 'X' # To mark as hit
       if ship_sunk_at?(x, y)
-        'Sink'
+        'You sank a ship !'
       else
-        'Hit'
+        'Hit !'
       end
     elsif @grid[x][y] == '-'
       @grid[x][y] = 'O' # To mark as miss
-      'Miss'
+      'Miss...'
     else
       'Already shot here'
     end

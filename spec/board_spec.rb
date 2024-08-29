@@ -12,18 +12,18 @@ RSpec.describe Board do
   end
 
   describe '#shoot' do
-    it 'returns "Hit" if a ship is hit' do
-      expect(board.shoot(0, 0)).to eq('Hit')
+    it 'returns "Hit !" if a ship is hit' do
+      expect(board.shoot(0, 0)).to eq('Hit !')
     end
 
-    it 'returns "Miss" if no ship is hit' do
-      expect(board.shoot(4, 4)).to eq('Miss')
+    it 'returns "Miss..." if no ship is hit' do
+      expect(board.shoot(4, 4)).to eq('Miss...')
     end
 
-    it 'returns "Sink" if a ship is sunk' do
+    it 'returns "You sank a ship !" if a ship is sunk' do
       board.shoot(0, 0)
       board.shoot(0, 1)
-      expect(board.shoot(0, 2)).to eq('Sink')
+      expect(board.shoot(0, 2)).to eq('You sank a ship !')
     end
 
     it 'confirms all ships are sunk' do

@@ -19,9 +19,6 @@ opponent_board = current_player == player1 ? player2.board : player1.board
 puts "#{current_player.name} will start the game!"
 
 # Game loop for taking turns
-current_player = player1
-opponent_board = player2.board
-
 loop do
   current_player.take_turn(opponent_board)
 

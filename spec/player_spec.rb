@@ -1,6 +1,6 @@
-require'player'
-require'board'
-require'ship'
+require 'player'
+require 'board'
+require 'ship'
 
 RSpec.describe Player do
   let(:player) { Player.new("Alice") }
@@ -12,10 +12,20 @@ RSpec.describe Player do
   end
 
   describe '#take_turn' do
-    it 'allows the player to shoot at the opponent board and displays the result' do
-      allow(player).to receive(:gets).and_return('0 0')
-      expect(opponent_board).to receive(:shoot).with(0, 0).and_return('Hit')
-      expect { player.take_turn(opponent_board) }.to output(/Hit/).to_stdout
+    it 'allows the player to retry if the input is invalid or the shot is out of bounds' do
+      # Simulate invalid input followed by a valid input
+      allow(player).to receive(:gets).and_return('a b', '5 5', '0 0')
+
+      expect do
+        player.take_turn(opponent_board)
+      end.to output(
+        "Alice, choose coordinates to shoot (e.g., 0 0):\n" \
+        "Invalid input, coordinates must be numbers between 0 and 4.\n" \
+        "Alice, choose coordinates to shoot (e.g., 0 0):\n" \
+        "Invalid input, coordinates must be numbers between 0 and 4.\n" \
+        "Alice, choose coordinates to shoot (e.g., 0 0):\n" \
+        "Hit !\n"
+      ).to_stdout
     end
   end
 end
