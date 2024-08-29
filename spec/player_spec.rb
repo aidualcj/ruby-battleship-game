@@ -13,7 +13,6 @@ RSpec.describe Player do
 
   describe '#take_turn' do
     it 'allows the player to retry if the input is invalid or the shot is out of bounds' do
-      # Simulate incorrect input format, out-of-bounds input, and then a valid input
       allow(player).to receive(:gets).and_return('23', '5 5', '0 0')
 
       expect do
@@ -27,77 +26,54 @@ RSpec.describe Player do
         "Hit !\n"
       ).to_stdout
     end
+
+    it 'provides a hint after three consecutive misses' do
+      allow(player).to receive(:gets).and_return('4 4', '3 3', '2 2')
+      allow(player).to receive(:give_hint)
+
+      expect(player).to receive(:give_hint).once
+
+      3.times { player.take_turn(opponent_board) }
+    end
+
+    it 'does not give a hint if less than three consecutive misses occur' do
+      allow(player).to receive(:gets).and_return('4 4', '3 3', '0 0')
+      allow(player).to receive(:give_hint)
+
+      expect(player).not_to receive(:give_hint)
+
+      3.times { player.take_turn(opponent_board) }
+    end
   end
 
   describe '#place_ships' do
     it 'retries when placing a ship out of bounds or overlapping' do
-      # Simulate a series of inputs: out of bounds, overlapping, then valid
-      allow(player).to receive(:gets).and_return('5 5 horizontal', '0 0 vertical', '2 2 horizontal')
+      allow(player).to receive(:gets).and_return(
+        '5 5 horizontal',  # Out of bounds
+        '0 2 diagonal_left', # Valid placement
+        '0 0 vertical',    # Overlap
+        '0 4 diagonal_left' # Another valid placement
+      )
 
       expect do
         player.place_ships
       end.to output(
         "Alice, where do you want to place your 3-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal', 'vertical', 'diagonal_right', or 'diagonal_left'.\n" \
+        "Ship out of bounds, please try again.\n" \
         "Alice, where do you want to place your 3-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "Ships cannot overlap, please try again.\n" \
-        "Alice, where do you want to place your 3-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "S S S - -\n" \
-        "- - - - -\n" \
-        "- - - - -\n" \
-        "- - - - -\n" \
-        "- - - - -\n" \
-        "Alice, where do you want to place your 4-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n"
-      ).to_stdout
-    end
-
-    it 'places ships in diagonal orientations correctly' do
-      # Simulate inputs for placing ships diagonally
-      allow(player).to receive(:gets).and_return('0 0 diagonal_right', '1 1 diagonal_left')
-
-      expect do
-        player.place_ships
-      end.to output(
-        "Alice, where do you want to place your 3-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "S - - - -\n" \
-        "- S - - -\n" \
         "- - S - -\n" \
+        "- S - - -\n" \
+        "S - - - -\n" \
         "- - - - -\n" \
         "- - - - -\n" \
         "Alice, where do you want to place your 4-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "S - - - -\n" \
-        "- S - - -\n" \
+        "Ships cannot overlap, please try again.\n" \
+        "Alice, where do you want to place your 4-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
+        "- - S - S\n" \
+        "- S - S -\n" \
         "S - S - -\n" \
-        "- - - S -\n" \
-        "- - - - -\n"
-      ).to_stdout
-
-      # Validate the ship's positions on the board grid
-      expect(player.board.instance_variable_get(:@grid)[0][0]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[1][1]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[2][2]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[1][0]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[2][1]).to eq('S')
-      expect(player.board.instance_variable_get(:@grid)[3][2]).to eq('S')
-    end
-
-    it 'does not allow placing ships outside the board boundaries' do
-      allow(player).to receive(:gets).and_return('6 6 horizontal', '4 4 vertical', '0 0 diagonal_right')
-
-      expect do
-        player.place_ships
-      end.to output(
-        "Alice, where do you want to place your 3-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal', 'vertical', 'diagonal_right', or 'diagonal_left'.\n" \
-        "Alice, where do you want to place your 3-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal', 'vertical', 'diagonal_right', or 'diagonal_left'.\n" \
-        "Alice, where do you want to place your 3-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n" \
-        "S - - - -\n" \
         "- S - - -\n" \
-        "- - S - -\n" \
-        "- - - - -\n" \
-        "- - - - -\n" \
-        "Alice, where do you want to place your 4-unit ship? Format: x y orientation (e.g., '0 0 horizontal')\n"
+        "- - - - -\n"
       ).to_stdout
     end
   end

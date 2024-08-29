@@ -4,6 +4,7 @@ class Player
   def initialize(name)
     @name = name
     @board = Board.new
+    @consecutive_misses = 0
   end
 
   def place_ships
@@ -12,7 +13,6 @@ class Player
         puts "#{name}, where do you want to place your #{ship.size}-unit ship? Format: x y orientation (e.g., '0 0 horizontal')"
         input = gets.chomp.split
 
-        # Validate input format: x y orientation
         if input.size != 3 || !valid_coordinate_format?(input[0], input[1]) || !%w[horizontal vertical diagonal_right diagonal_left].include?(input[2])
           puts "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal', 'vertical', 'diagonal_right', or 'diagonal_left'."
           next
@@ -21,13 +21,11 @@ class Player
         x, y = input[0].to_i, input[1].to_i
         orientation = input[2]
 
-        # Validate coordinates range for ship placement
         unless x.between?(0, 4) && y.between?(0, 4)
-          puts "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal', 'vertical', 'diagonal_right', or 'diagonal_left'."
+          puts "Ship out of bounds, please try again."
           next
         end
 
-        # Validate ship placement
         valid, error_message = @board.position_valid?(ship, x, y, orientation.to_sym)
         if valid
           @board.place_ship(ship, x, y, orientation.to_sym)
@@ -40,13 +38,11 @@ class Player
     end
   end
 
-
   def take_turn(opponent_board)
     loop do
       puts "#{name}, choose coordinates to shoot (e.g., 0 0):"
       input = gets.chomp.split
 
-      # Validate input format: x y
       if input.size != 2 || !valid_coordinate_format?(input[0], input[1])
         puts "Invalid input, must be two numbers between 0 and 4, separated by a space."
         next
@@ -54,7 +50,6 @@ class Player
 
       x, y = input[0].to_i, input[1].to_i
 
-      # Validate if within bounds for shooting
       unless x.between?(0, 4) && y.between?(0, 4)
         puts "Shot out of bounds, try again."
         next
@@ -63,11 +58,32 @@ class Player
       result = opponent_board.shoot(x, y)
       puts result
 
+      if result == 'Miss...'
+        @consecutive_misses += 1
+        if @consecutive_misses == 3
+          give_hint(opponent_board)
+          @consecutive_misses = 0
+        end
+      else
+        @consecutive_misses = 0
+      end
+
       break unless result == 'Out of bounds'
     end
   end
 
-  # Method to validate if input format is numeric and within bounds
+  def give_hint(opponent_board)
+    valid_shots = []
+    (0..4).each do |x|
+      (0..4).each do |y|
+        valid_shots << [x, y] if opponent_board.within_bounds?(x, y) && opponent_board.instance_variable_get(:@grid)[x][y] == 'S'
+      end
+    end
+
+    hint = valid_shots.sample
+    puts "Hint: Try shooting at #{hint[0]} #{hint[1]}"
+  end
+
   def valid_coordinate_format?(x, y)
     x.match?(/^\d$/) && y.match?(/^\d$/)
   end

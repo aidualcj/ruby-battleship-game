@@ -7,7 +7,7 @@ RSpec.describe Board do
   let(:large_ship) { Ship.new(4) }
 
   before do
-    board.place_ship(small_ship, 0, 0, :horizontal) # Placer un petit navire horizontalement en haut à gauche
+    board.place_ship(small_ship, 0, 0, :horizontal)
   end
 
   describe '#shoot' do
@@ -50,14 +50,14 @@ RSpec.describe Board do
     end
 
     it 'allows placing a ship diagonally to the right' do
-      board = Board.new # Réinitialiser le plateau pour éviter tout chevauchement
+      board = Board.new
       expect do
         board.place_ship(Ship.new(3), 0, 0, :diagonal_right)
       end.to change { board.instance_variable_get(:@grid).flatten.count('S') }.by(3)
     end
 
     it 'allows placing a ship diagonally to the left' do
-      board = Board.new # Réinitialiser le plateau pour éviter tout chevauchement
+      board = Board.new
       expect do
         board.place_ship(Ship.new(3), 2, 2, :diagonal_left)
       end.to change { board.instance_variable_get(:@grid).flatten.count('S') }.by(3)

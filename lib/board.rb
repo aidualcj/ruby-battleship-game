@@ -60,14 +60,14 @@ class Board
       end
     end
 
-    [true, nil] # Valid position with no error message
+    [true, nil]
   end
-
-  private
 
   def within_bounds?(x, y)
     x.between?(0, 4) && y.between?(0, 4)
   end
+
+  private
 
   # New method to check if a specific ship is sunk
   def ship_sunk_at?(x, y)
