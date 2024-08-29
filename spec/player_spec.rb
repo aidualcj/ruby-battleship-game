@@ -13,16 +13,16 @@ RSpec.describe Player do
 
   describe '#take_turn' do
     it 'allows the player to retry if the input is invalid or the shot is out of bounds' do
-      # Simulate invalid input followed by a valid input
-      allow(player).to receive(:gets).and_return('a b', '5 5', '0 0')
+      # Simulate incorrect input format, out-of-bounds input, and then a valid input
+      allow(player).to receive(:gets).and_return('23', '5 5', '0 0')
 
       expect do
         player.take_turn(opponent_board)
       end.to output(
         "Alice, choose coordinates to shoot (e.g., 0 0):\n" \
-        "Invalid input, coordinates must be numbers between 0 and 4.\n" \
+        "Invalid input, must be two numbers between 0 and 4, separated by a space.\n" \
         "Alice, choose coordinates to shoot (e.g., 0 0):\n" \
-        "Invalid input, coordinates must be numbers between 0 and 4.\n" \
+        "Shot out of bounds, try again.\n" \
         "Alice, choose coordinates to shoot (e.g., 0 0):\n" \
         "Hit !\n"
       ).to_stdout
