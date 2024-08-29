@@ -14,6 +14,10 @@ class Ship
       @size.times { |i| coords << [x, y + i] }
     when :vertical
       @size.times { |i| coords << [x + i, y] }
+    when :diagonal_right # Top-left to bottom-right diagonal
+      @size.times { |i| coords << [x + i, y + i] }
+    when :diagonal_left  # Top-right to bottom-left diagonal
+      @size.times { |i| coords << [x + i, y - i] }
     end
     @coordinates = coords
   end

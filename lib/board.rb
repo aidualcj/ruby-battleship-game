@@ -9,14 +9,15 @@ class Board
   end
 
   def place_ship(ship, x, y, orientation)
-    if position_valid?(ship, x, y, orientation)
+    valid, error_message = position_valid?(ship, x, y, orientation)
+    if valid
       ship.calculate_coordinates(x, y, orientation)
       ship.coordinates.each do |coord|
         @grid[coord[0]][coord[1]] = 'S'
       end
       @ships << ship
     else
-      raise "Invalid position for the ship"
+      puts error_message
     end
   end
 
@@ -49,9 +50,17 @@ class Board
 
   def position_valid?(ship, x, y, orientation)
     ship.calculate_coordinates(x, y, orientation)
-    ship.coordinates.all? do |coord|
-      within_bounds?(coord[0], coord[1]) && @grid[coord[0]][coord[1]] == '-'
+    ship.coordinates.each do |coord|
+      unless within_bounds?(coord[0], coord[1])
+        return [false, "Ship out of bounds, please try again."]
+      end
+
+      if @grid[coord[0]][coord[1]] != '-'
+        return [false, "Ships cannot overlap, please try again."]
+      end
     end
+
+    [true, nil] # Valid position with no error message
   end
 
   private

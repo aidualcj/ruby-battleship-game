@@ -13,8 +13,8 @@ class Player
         input = gets.chomp.split
 
         # Validate input format: x y orientation
-        if input.size != 3 || !valid_coordinate_format?(input[0], input[1]) || !%w[horizontal vertical].include?(input[2])
-          puts "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal' or 'vertical'."
+        if input.size != 3 || !valid_coordinate_format?(input[0], input[1]) || !%w[horizontal vertical diagonal_right diagonal_left].include?(input[2])
+          puts "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal', 'vertical', 'diagonal_right', or 'diagonal_left'."
           next
         end
 
@@ -23,21 +23,23 @@ class Player
 
         # Validate coordinates range for ship placement
         unless x.between?(0, 4) && y.between?(0, 4)
-          puts "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal' or 'vertical'."
+          puts "Invalid input, must be two numbers between 0 and 4, separated by a space, followed by 'horizontal', 'vertical', 'diagonal_right', or 'diagonal_left'."
           next
         end
 
         # Validate ship placement
-        if @board.position_valid?(ship, x, y, orientation.to_sym)
+        valid, error_message = @board.position_valid?(ship, x, y, orientation.to_sym)
+        if valid
           @board.place_ship(ship, x, y, orientation.to_sym)
           @board.display
           break
         else
-          puts "Invalid position for the ship, please try again."
+          puts error_message
         end
       end
     end
   end
+
 
   def take_turn(opponent_board)
     loop do
